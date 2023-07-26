@@ -1,15 +1,14 @@
 import React, {useState} from 'react'
-import Graph from './assets/components/Graph'
+import Graph from './components/Graph'
 
 import './App.css'
 
 function App() {
 
-
-  const data = [
+  let data = [
     {
       type: "Subject",
-      content: "Philosophy & Psychology"
+      content: "Philosophy & Psychology",
     },
     {
       type: "Subject",
@@ -69,6 +68,43 @@ function App() {
     },
 
   ]
+
+  data = data.map(d => {
+    return {
+      ...d,
+      children: [
+        {
+          type: "Book",
+          content: d.content,
+        },
+        {
+          type: "Book",
+          content: d.content,
+        },
+        {
+          type: "Author",
+          content: d.content,
+        },
+        {
+          type: "Author",
+          content: d.content,
+        },
+        {
+          type: "Subject",
+          content: d.content,
+        },
+        {
+          type: "Subject",
+          content: d.content,
+        }
+      ]
+    }
+  })
+
+  data = {
+    content: "Books",
+    children: [...data]
+  }
   
   return (
     <div>

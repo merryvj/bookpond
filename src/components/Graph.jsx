@@ -5,44 +5,12 @@ import Node from "./Node";
 
 function Graph({ data, onZoom}) {
   const svgRef = useRef();
-  
-  const [root, setRoot] = useState(null);
+  const root = d3.hierarchy(data);
+  const [nodes, setNodes] = useState(root.descendants());
   const [animatedNodes, setAnimatedNodes] = useState([]);
   const [zoomLevel, setZoomLevel] = useState(0);
-  const [focusedNode, setFocusedNode] = useState();
+  const [visibleNodes, setVisibleNodes] = useState(root.children);
 
-  let newData = [
-    {
-      type: "Subject",
-      content: "UWU"
-    },
-    {
-      type: "Subject",
-      content: "OOWOO"
-    },
-    {
-      type: "Author",
-      content: "OOWOO"
-    },
-    {
-      type: "Book",
-      content: "OOWOO"
-    },
-  ]
-
-  const addChildrenNodes = () => {
-    const sim = d3
-      .forceSimulation()
-      .force("radial", d3.forceRadial(150, 0, 0))
-      .force("collide", d3.forceCollide(150));
-
-    sim.on("tick", () => {
-      setAnimatedNodes([...sim.nodes()]);
-    });
-
-    sim.nodes(newData);
-    sim.alpha(0.1).restart();
-  }
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
@@ -57,11 +25,13 @@ function Graph({ data, onZoom}) {
 
       //find node being zoomed into
       let scale = -e.transform.k;
-      setFocusedNode(sim.find(e.transform.x/scale, e.transform.y / scale, 150));
+      
 
       if (e.transform.k === 5 && zoomLevel === 0) {
+        //let focusedNode = sim.find(e.transform.x/scale, e.transform.y / scale, 200);
+        //sim.nodes(focusedNode.children);
+
         setZoomLevel(1);
-        addChildrenNodes();
       } else if (e.transform.k < 1) {
         setZoomLevel(0);
       }
@@ -73,37 +43,50 @@ function Graph({ data, onZoom}) {
       svg.selectAll("g").attr("transform", transform);
     }
 
+    updateSim();
+    
+  }, []);
+
+
+  function updateSim() {
     const sim = d3
       .forceSimulation()
-      .force("radial", d3.forceRadial(150, origin.x, origin.y))
-      .force("collide", d3.forceCollide(150));
+      .force("charge", d3.forceManyBody().strength(100))
+      .force("collide", d3.forceCollide(50))
 
     sim.on("tick", () => {
       setAnimatedNodes([...sim.nodes()]);
     });
 
-    sim.nodes(data);
+    sim.nodes(nodes);
+    console.log(animatedNodes);
     sim.alpha(0.1).restart();
     return () => sim.stop();
-  }, [zoomLevel]);
-
-
+  }
   const dataZoomIn = (node) => {
     onZoom(node.data.link);
   }
+
+  const handleClick = (node) => {
+    setVisibleNodes((prevNodes) => [node, ...node.children]);
+
+    updateSim();
+  }
+
+
   
   return (
    <>
   <svg
-      ref={svgRef}
-      width={"100vw"}
-      height={"100vh"}
-      viewBox="-500 -500 1000 1000"
-    >
-        {animatedNodes.map((node, i) => (
-          <Node key={i} node={node} onClick={() => dataZoomIn(node)}/>
-        ))}
-    </svg>
+   ref={svgRef}
+   width={"100vw"}
+   height={"100vh"}
+   viewBox="-500 -500 1000 1000"
+ >
+     {animatedNodes.map((node, i) => (
+       <Node isVisible={visibleNodes.includes(node)} key={i} node={node} onClick={() => handleClick(node)}/>
+     ))}
+ </svg>
    </>
   );
 }

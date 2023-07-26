@@ -1,14 +1,14 @@
 import React from "react";
 
-function Node({node, onClick, isOrigin = false}) {
+function Node({isVisible = false, node, onClick, isOrigin = false}) {
 
   let position = isOrigin ? [0, 0] : [node.x, node.y]; 
 
   const AuthorNode = () => {
     return (
-      <g>
+      <g style={{opacity: isVisible ? 1 : 0}} onClick={onClick}>
         <text x={position[0]} y={position[1] + 50} textAnchor="middle">
-        {node.content}
+        {node.data.content}
       </text>
       <circle cx={position[0]} cy={position[1]} r={25}/>
       </g>
@@ -16,9 +16,9 @@ function Node({node, onClick, isOrigin = false}) {
   }
   const SubjectNode = () => {
     return (
-      <g>
-      <text x={position[0]} y={position[1]} textAnchor="right">
-        {node.content}
+      <g style={{opacity: isVisible ? 1 : 0}} onClick={onClick}>
+      <text x={position[0]} y={position[1]} textAnchor="right" >
+        {node.data.content} {node.depth}
       </text>
       </g>
     )
@@ -26,16 +26,16 @@ function Node({node, onClick, isOrigin = false}) {
 
   const BookNode = () => {
     return (
-      <g>
+      <g style={{opacity: isVisible ? 1 : 0}} onClick={onClick}>
         <text x={position[0]} y={position[1]} textAnchor="middle">
-        {node.content}
+        {node.data.content}
       </text>
       <rect x={position[0]} y={position[1]} height={80} width={50}/>
       </g>
     )
   }
 
-  switch(node.type) {
+  switch(node.data.type) {
     case "Subject":
       return SubjectNode();
     case "Author":
