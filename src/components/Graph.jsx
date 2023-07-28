@@ -69,7 +69,6 @@ function Graph({ data, onZoom}) {
 
   const handleClick = (node) => {
     setVisibleNodes((prevNodes) => [node, ...node.children]);
-
     updateSim();
   }
 

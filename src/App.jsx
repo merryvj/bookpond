@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import Graph from './components/Graph'
+import ForceGraph from './components/ForceGraph'
 
 import './App.css'
 
@@ -44,27 +45,27 @@ function App() {
     },
     {
       type: "Author",
-      content: "Octavia Butler"
+      content: "Author"
     },
     {
       type: "Author",
-      content: "Octavia Butler"
+      content: "Author"
     },
     {
       type: "Author",
-      content: "Octavia Butler"
+      content: "Author"
     },
     {
       type: "Book",
-      content: "The Catcher in the Rye"
+      content: "Book Title"
     },
     {
       type: "Book",
-      content: "The Catcher in the Rye"
+      content: "Book Title"
     },
     {
       type: "Book",
-      content: "The Catcher in the Rye"
+      content: "Book Title"
     },
 
   ]
@@ -108,11 +109,7 @@ function App() {
   
   return (
     <div>
-      {(data.length === 0) ? (
-        <p>Loading...</p>
-      ) : (
-        <Graph data={data}/>
-      )}
+      <ForceGraph/>
     </div>
   )}
 

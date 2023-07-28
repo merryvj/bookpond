@@ -30,7 +30,7 @@ function Node({isVisible = false, node, onClick, isOrigin = false}) {
         <text x={position[0]} y={position[1]} textAnchor="middle">
         {node.data.content}
       </text>
-      <rect x={position[0]} y={position[1]} height={80} width={50}/>
+      <rect x={position[0] - 25} y={position[1] - 100} height={80} width={50}/>
       </g>
     )
   }
@@ -43,7 +43,6 @@ function Node({isVisible = false, node, onClick, isOrigin = false}) {
     case "Book":
       return BookNode();
   }
-
 }
 
 
