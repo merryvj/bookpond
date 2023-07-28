@@ -15,7 +15,9 @@ function ForceGraph() {
   //set focused node, which is used to query more data
   const handleClick = useCallback(
     (node) => {
-      setFocusedNode(node);
+      if (!state.ancestors.includes(node)) {
+        setFocusedNode(node);
+      }
     },
     [nodeData]
   );
@@ -101,14 +103,14 @@ function Graph({ nodeData, linkData, handleNodeClick }) {
         viewBox="-500 -500 1000 1000"
       >
         {animatedNodes.map((node) => (
-          <Node node={node} onClick={() => handleNodeClick(node)} focused={graph.origin.id === node.id}/>
+          <Node node={node} onClick={() => handleNodeClick(node)} focused={graph.origin.id === node.id} historical={graph.ancestors.includes(node)}/>
         ))}
       </svg>
     </>
   );
 }
 
-function Node({node, onClick, focused}) {
+function Node({node, onClick, focused, historical}) {
 
     const springs = useSpring({
         config: {
@@ -121,14 +123,19 @@ function Node({node, onClick, focused}) {
     })
 
     const isFocused = useRef(false);
+    const isHistorical = useRef(false);
 
     useEffect(() => {
         isFocused.current = focused;
     }, [focused])
+    
+    useEffect(() => {
+      isHistorical.current = historical;
+  }, [focused])
 
     return (
         <g key={node.id} onClick={onClick}>
-          <animated.text x={node.x} y={node.y} textAnchor={"middle"} fill={focused ? "blue" : "black"}  style={springs}>{node.title}</animated.text>
+          <animated.text x={node.x} y={node.y} textAnchor={"middle"} fill={focused ? "blue" : (historical ? "green" : "black")}  style={springs}>{node.title}</animated.text>
          </g>
     )
 }

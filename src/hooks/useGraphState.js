@@ -11,7 +11,7 @@ function useGraphState({nodeData, linkData}) {
         links: linkData,
         ancestors: [],
     }
-    
+
     const reducer = (state, action) => {
         switch (action.type) {
           case 'SelectNode':
