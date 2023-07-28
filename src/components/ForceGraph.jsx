@@ -53,6 +53,7 @@ function ForceGraph() {
 function Graph({ nodeData, linkData, handleNodeClick }) {
   const svgRef = useRef();
   const [svg, setSvg] = useState();
+  const transform = useRef();
   const [animatedNodes, setAnimatedNodes] = useState([]);
   const [animatedLinks, setAnimatedLinks] = useState([]);
   const graph = useContext(GraphContext);
@@ -65,6 +66,11 @@ function Graph({ nodeData, linkData, handleNodeClick }) {
 
   // re-create animation every time nodes change
   useEffect(() => {
+
+    if (svg) {
+      svg.selectAll("g").attr("transform", transform.current);
+    }
+
     const simulation = d3
       .forceSimulation(nodeData)
       .force("charge", d3.forceManyBody().strength(20))
@@ -102,16 +108,16 @@ function Graph({ nodeData, linkData, handleNodeClick }) {
         .on("zoom", handleZoom);
 
       svg.call(zoomBehavior);
-
-      function handleZoom(e) {
-        // Get the zoom transform
-        const transform = e.transform;
-
-        // Apply the zoom transform to the elements you want to zoom
-        svg.selectAll("g").attr("transform", transform);
-      }
     }
   }, [svg]);
+
+  function handleZoom(e) {
+    // Get the zoom transform
+    transform.current = e.transform;
+
+    // Apply the zoom transform
+    svg.selectAll("g").attr("transform", transform.current);
+  }
 
   return (
     <>
