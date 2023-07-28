@@ -12,33 +12,28 @@ function ForceGraph() {
   const {nodeData, linkData} = useBookData(focusedNode);
   const [state, dispatch] = useGraphState({nodeData, linkData});
 
-
+  //set focused node, which is used to query more data
   const handleClick = useCallback(
     (node) => {
-
-      //set clicked node as the origin node
       setFocusedNode(node);
-      
-      dispatch({
-        type: 'SelectNode',
-        origin: node
-      })
-
-      //get data related to the focused node
-
-      //add new nodes from the new data
-
-      //if there's at least one ancestor for clicked nodes, add a link
-
-      //fade out nodes that were not clicked
     },
     [nodeData]
   );
 
+  //update graph data after clicking on node
+  useEffect(() => {
+    dispatch({
+      type: 'SelectNode',
+      origin: focusedNode,
+      nodes: nodeData,
+      links: linkData
+    })
+  }, [nodeData])
+
   return (
     <GraphContext.Provider value={state}>
         <GraphDispatchContext.Provider value={dispatch}>
-            <Graph nodeData={nodeData} linkData={linkData} handleNodeClick={handleClick} />
+            <Graph nodeData={state.nodes} linkData={state.links} handleNodeClick={handleClick} />
         </GraphDispatchContext.Provider>
 
     </GraphContext.Provider>
@@ -57,7 +52,7 @@ function Graph({ nodeData, linkData, handleNodeClick }) {
     .force("charge", d3.forceManyBody().strength(20))
     .force("collide", d3.forceCollide(50))
     .force("link", d3.forceLink(linkData)
-     .id(function(d,i) {
+     .id(function(d) {
          return d.id
      }).strength(2))
 
@@ -80,22 +75,22 @@ function Graph({ nodeData, linkData, handleNodeClick }) {
 
   
 
-  useEffect(() => {
-    const svg = d3.select(svgRef.current);
-    const zoomBehavior = zoom()
-      .scaleExtent([0.5, 5]) // Set the minimum and maximum zoom level
-      .on("zoom", handleZoom);
+  // useEffect(() => {
+  //   const svg = d3.select(svgRef.current);
+  //   const zoomBehavior = zoom()
+  //     .scaleExtent([0.5, 5]) // Set the minimum and maximum zoom level
+  //     .on("zoom", handleZoom);
 
-    svg.call(zoomBehavior);
+  //   svg.call(zoomBehavior);
     
-    function handleZoom(e) {
-      // Get the zoom transform
-      const transform = e.transform;
+  //   function handleZoom(e) {
+  //     // Get the zoom transform
+  //     const transform = e.transform;
 
-      // Apply the zoom transform to the elements you want to zoom
-      svg.selectAll("g").attr("transform", transform);
-    }
-  }, [])
+  //     // Apply the zoom transform to the elements you want to zoom
+  //     svg.selectAll("g").attr("transform", transform);
+  //   }
+  // }, [])
 
   return (
     <>
@@ -133,16 +128,8 @@ function Node({node, onClick, focused}) {
 
     return (
         <g key={node.id} onClick={onClick}>
-            {/* <circle
-            onClick={() => handleNodeClick(node)}
-            cx={node.x}
-            cy={node.y}
-            r={20}
-            stroke="black"
-            fill="transparent"
-          /> */}
           <animated.text x={node.x} y={node.y} textAnchor={"middle"} fill={focused ? "blue" : "black"}  style={springs}>{node.title}</animated.text>
-    </g>
+         </g>
     )
 }
 

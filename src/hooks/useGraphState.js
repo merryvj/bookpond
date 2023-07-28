@@ -11,11 +11,17 @@ function useGraphState({nodeData, linkData}) {
         links: linkData,
         ancestors: [],
     }
-        
+    
     const reducer = (state, action) => {
         switch (action.type) {
           case 'SelectNode':
-            return { ...state, origin: action.origin};
+            console.log(state.ancestors);
+            return {
+              ...state,origin: action.origin,
+              nodes: action.nodes,
+              links: action.links,
+              ancestors: [...state.ancestors, action.origin]
+            };
           default:
             return state;
         }
